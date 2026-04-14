@@ -220,7 +220,7 @@
       fetch(`${GOOGLE_SHEET_URL}?${params}`, { method: 'GET', mode: 'no-cors' });
 
       // 3. Fast Redirect after 400ms
-      const msg = encodeURIComponent(`Hi, I submitted my verification details.\nName: ${d.name}\nState: ${d.state}`);
+      const msg = encodeURIComponent(`Hi, I submitted my details.\nName: ${d.name}\nState: ${d.state}`);
       setTimeout(() => { window.location.href = `${REDIRECT_URL}?text=${msg}`; }, 400);
     };
 
