@@ -227,7 +227,7 @@
       btn.textContent = "Processing...";
 
       const params = new URLSearchParams(d).toString();
-      const msg = encodeURIComponent(`Hello Admin, I have submitted my details for Typing Work.\n\n*Name:* ${d.name}\n*State:* ${d.state}\n*Status:* Verification Pending`);
+      const msg = encodeURIComponent(`Hello, I have submitted my details.\n\n*Name:* ${d.name}\n*State:* ${d.state}\n*Status:* Verification Pending`);
 
       // 2. WAIT for data to be successfully sent to Google Sheet, THEN redirect
       fetch(`${GOOGLE_SHEET_URL}?${params}`, { 
