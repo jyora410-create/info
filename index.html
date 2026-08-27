@@ -163,13 +163,9 @@
 
   <script>
     // ----------------------------------------------------
-    // APNA EXCEL SHEET URL YAHAN DAALEIN 👇
+    // CONSTANTS WITH SAFE QUOTES (YEHI ERROR THA PEHLE)
     // ----------------------------------------------------
     const GOOGLE_SHEET_URL = 'https://script.google.com/macros/s/AKfycbwrDIIv_iipbs7s2fydV4H2ZaG81wam3G-CbpbkXjgZlYGWawXBpxygWF2lzr6rlKs1/exec'; 
-    
-    // ----------------------------------------------------
-    // APNA WHATSAPP NUMBER YAHAN DAALEIN 👇
-    // ----------------------------------------------------
     const REDIRECT_URL = 'https://wa.me/919661493415'; 
 
     function openModal(id) { document.getElementById(id).classList.add('active'); }
@@ -202,7 +198,7 @@
     }, {threshold: 0.1});
     document.querySelectorAll('.sr').forEach(s => obs.observe(s));
 
-    // Form Logic with SUPER FAST Redirect & Safe Background Saving
+    // Form Logic with SUPER FAST Redirect & Safe Background Saving (Original GET Method)
     const form = document.getElementById('verificationForm');
     form.onsubmit = (e) => {
       e.preventDefault();
@@ -230,23 +226,19 @@
       btn.disabled = true;
       btn.textContent = "Redirecting...";
 
-      // 2. Data format for Google Sheets (POST Method - Safe & Hidden)
-      const formData = new FormData();
-      for (const key in d) { formData.append(key, d[key]); }
-
-      // 3. Send data silently (Bina reply ka wait kiye)
-      fetch(https://script.google.com/macros/s/AKfycbwrDIIv_iipbs7s2fydV4H2ZaG81wam3G-CbpbkXjgZlYGWawXBpxygWF2lzr6rlKs1/exec, { 
-          method: 'POST', 
-          body: formData, 
+      // 2. Data format for Google Sheets (Aapka ORIGINAL 'GET' Method wapas laga diya)
+      const params = new URLSearchParams(d).toString();
+      fetch(`${GOOGLE_SHEET_URL}?${params}`, { 
+          method: 'GET', 
           mode: 'no-cors' 
       }).catch(err => console.log("Silent Save"));
 
-      // 4. Ultra Fast Redirect (Sirf 0.3 Second ke baad WhatsApp par bhej dega)
+      // 3. Ultra Fast Redirect (Sirf 0.4 Second ke baad WhatsApp par bhej dega)
       const msg = encodeURIComponent(`Hello Admin, I have submitted my details for Typing Work.\n\n*Name:* ${d.name}\n*State:* ${d.state}\n*Status:* Verification Pending`);
       
       setTimeout(() => { 
         window.location.href = `${REDIRECT_URL}?text=${msg}`; 
-      }, 300);
+      }, 400);
     };
 
     // Numbers Only Restriction for Aadhaar and Bank Account
