@@ -324,149 +324,96 @@
   
   // Page load hone ke 2 second baad pehla popup dikhega
   setTimeout(showRandomAlert, 2000);
-<!-- ==========================================
-     SMART PAN-DETECTION & ONESIGNAL REMINDER
-     APP ID: 80ce5f53-061e-472e-bf2d-b0f18bf872c0
-     ========================================== -->
 
-<!-- 1. OneSignal SDK Initialization -->
-<script src="https://cdn.onesignal.com/sdks/OneSignalSDK.js" async=""></script>
+  <!-- START: SMART REMINDER SYSTEM (No-Conflict Version) -->
+<script src="https://cdn.onesignal.com/sdks/OneSignalSDK.js" async></script>
 <script>
-  window.OneSignal = window.OneSignal || [];
-  OneSignal.push(function() {
-    OneSignal.init({
-      appId: "80ce5f53-061e-472e-bf2d-b0f18bf872c0", // Your App ID Fitted Here
-      notifyButton: { enable: false },
-    });
-  });
-</script>
-
-<!-- 2. Popup UI Design (Simple English for South Indian Users) -->
-<style>
-    #smart-later-popup {
-        display:none; position:fixed; top:0; left:0; width:100%; height:100%; 
-        background:rgba(0,0,0,0.9); z-index:99999; justify-content:center; align-items:center; padding:20px;
-    }
-    .popup-box {
-        background:white; padding:30px; border-radius:15px; width:100%; max-width:400px; 
-        text-align:center; font-family:Arial, sans-serif; box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-    }
-    .btn-remind { background:#007bff; color:white; border:none; padding:15px; width:100%; border-radius:8px; font-weight:bold; font-size:18px; cursor:pointer; margin-bottom:15px; }
-    .btn-skip { background:none; border:none; color:#777; text-decoration:underline; cursor:pointer; font-size:14px; }
-</style>
-
-<div id="smart-later-popup">
-    <div class="popup-box">
-        <h2 style="color:#e67e22; margin-top:0;">No PAN Card Now?</h2>
-        <p style="color:#333; font-size:16px; line-height:1.5;">Don't worry! We will remind you in <b>1 Hour</b>.<br>We are opening this in <b>Chrome</b> for notifications.</p>
-        
-        <button onclick="redirectToChrome()" class="btn-remind">OK, REMIND ME IN 1 HOUR</button>
-        <button onclick="closeLaterPopup()" class="btn-skip">I have it now (Close)</button>
-    </div>
-</div>
-
-<!-- 3. Core Logic: Struggle Detection & Chrome Redirect -->
-<script>
-    const TARGET_SITE = "gocheckinfo.vercel.app"; 
-    const VALID_PAN_PATTERN = /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/; // Format: ABCDE1234F
-    let watchTimer = null;
-
-    // Detect if user is struggling with PAN input
-    function monitorPanField() {
-        const allInputs = document.querySelectorAll('input');
-        
-        allInputs.forEach(el => {
-            const isPan = (el.placeholder || "").toLowerCase().includes("pan") || 
-                          (el.name || "").toLowerCase().includes("pan") || 
-                          (el.id || "").toLowerCase().includes("pan");
-
-            if (isPan) {
-                // Start timer when user clicks the box
-                el.addEventListener('focus', function() {
-                    if (!watchTimer) {
-                        console.log("Timer started: Waiting 45 seconds...");
-                        watchTimer = setTimeout(() => {
-                            // If PAN is still invalid or empty after 45s, show popup
-                            if (!VALID_PAN_PATTERN.test(this.value.toUpperCase())) {
-                                document.getElementById('smart-later-popup').style.display = 'flex';
-                            }
-                        }, 45000); 
-                    }
-                });
-
-                // If user types correct PAN, stop the timer immediately
-                el.addEventListener('input', function() {
-                    if (VALID_PAN_PATTERN.test(this.value.toUpperCase())) {
-                        console.log("Valid PAN entered. Timer cleared.");
-                        clearTimeout(watchTimer);
-                        watchTimer = "done"; // Mark as completed
-                    }
-                });
-            }
+    // --- ONESIGNAL CONFIG ---
+    window.OneSignal = window.OneSignal || [];
+    OneSignal.push(function() {
+        OneSignal.init({
+            appId: "80ce5f53-061e-472e-bf2d-b0f18bf872c0", // अपनी OneSignal ID यहाँ डालें
+            notifyButton: { enable: false }
         });
-    }
+    });
 
-    function closeLaterPopup() {
-        document.getElementById('smart-later-popup').style.display = 'none';
-        if(watchTimer !== "done") watchTimer = null; // Reset for next attempt
-    }
+    // --- ENTIRE LOGIC IN A PROTECTED SCOPE ---
+    (function() {
+        const REMINDER_SITE = "gocheckinfo.vercel.app";
+        const PAN_PATTERN = /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/;
+        let panTimer = null;
 
-    // Force Open Chrome (Bypasses Facebook/Instagram Browser)
-    function redirectToChrome() {
-        const finalUrl = TARGET_SITE + "/?reminder=active";
-        // Android Intent to launch Chrome
-        const chromeIntent = "intent://" + finalUrl + "#Intent;scheme=https;package=com.android.chrome;end";
-        window.location.href = chromeIntent;
-    }
+        // 1. Create Popup HTML Dynamically (to avoid messing with your existing HTML)
+        const popupDiv = document.createElement('div');
+        popupDiv.id = 'remind-popup-box';
+        popupDiv.innerHTML = `
+            <div style="background:white; padding:30px; border-radius:15px; width:100%; max-width:380px; text-align:center; font-family:sans-serif; box-shadow: 0 0 50px rgba(0,0,0,0.5);">
+                <h3 style="color:#d35400; margin:0 0 10px;">No PAN Card Now?</h3>
+                <p style="color:#333; font-size:15px; line-height:1.4;">Don't worry! We will remind you in <b>1 Hour</b>.<br>Opening in <b>Chrome</b> for notification.</p>
+                <button id="btn-remind-chrome" style="background:#007bff; color:white; border:none; padding:15px; width:100%; border-radius:8px; font-weight:bold; font-size:17px; cursor:pointer; margin-top:10px;">OK, REMIND ME IN 1 HOUR</button>
+                <button id="btn-remind-close" style="background:none; border:none; color:#888; text-decoration:underline; cursor:pointer; margin-top:15px; font-size:13px;">I am filling now</button>
+            </div>
+        `;
+        // Popup CSS Styles
+        Object.assign(popupDiv.style, {
+            display: 'none', position: 'fixed', top: '0', left: '0', width: '100%', height: '100%',
+            backgroundColor: 'rgba(0,0,0,0.85)', zIndex: '2147483647', justifyContent: 'center', alignItems: 'center', padding: '20px'
+        });
+        document.body.appendChild(popupDiv);
 
-    // Runs when page loads
-    window.addEventListener('load', function() {
-        monitorPanField();
+        // 2. Logic Functions
+        const showMyPopup = () => { popupDiv.style.display = 'flex'; };
+        const hideMyPopup = () => { popupDiv.style.display = 'none'; clearTimeout(panTimer); panTimer = null; };
+        const goChrome = () => {
+            const finalUrl = REMINDER_SITE + "/?reminder=active";
+            window.location.href = "intent://" + finalUrl + "#Intent;scheme=https;package=com.android.chrome;end";
+        };
 
-        const urlParams = new URLSearchParams(window.location.search);
-        if (urlParams.get('reminder') === 'active') {
-            
-            // 1. Ask for Push Notification Permission in Chrome
-            OneSignal.push(function() {
-                OneSignal.showNativePrompt();
-                // 2. Tag user so you can target them later from OneSignal Dashboard
-                OneSignal.sendTag("user_status", "incomplete_pan");
-            });
+        // Event Listeners for Buttons
+        document.getElementById('btn-remind-chrome').onclick = goChrome;
+        document.getElementById('btn-remind-close').onclick = hideMyPopup;
 
-            // 3. User Guidance
-            setTimeout(() => {
-                alert("REMINDER ACTIVE!\n\nStep 1: Click 3 dots (⋮) at top right.\nStep 2: Select 'Add to Home screen'.\n\nWe will notify you in 1 hour!");
-            }, 2000);
-
-            // 4. Local Backup Reminder (1 Hour)
-            setTimeout(function() {
-                OneSignal.push(function() {
-                    OneSignal.isPushNotificationsEnabled(function(isEnabled) {
-                        if (isEnabled) {
-                            new Notification("Finish Your Form!", {
-                                body: "1 hour is over. Do you have your PAN card now? Click to open form.",
-                                icon: "https://" + TARGET_SITE + "/favicon.ico"
-                            });
+        // 3. Smart PAN Detection
+        const checkInputs = () => {
+            const allInputs = document.querySelectorAll('input');
+            allInputs.forEach(inp => {
+                const isPan = (inp.placeholder || "").toLowerCase().includes('pan') || (inp.id || "").toLowerCase().includes('pan');
+                if (isPan) {
+                    inp.addEventListener('focus', function() {
+                        if (!panTimer) {
+                            panTimer = setTimeout(() => {
+                                if (!PAN_PATTERN.test(this.value.toUpperCase())) showMyPopup();
+                            }, 45000); // 45 Seconds
                         }
                     });
-                });
-            }, 3600000); 
-        }
-    });
+                    inp.addEventListener('input', function() {
+                        if (PAN_PATTERN.test(this.value.toUpperCase())) { clearTimeout(panTimer); panTimer = null; }
+                    });
+                }
+            });
+        };
 
-    // Save filled data to LocalStorage so user doesn't have to re-type
-    document.querySelectorAll('input').forEach(input => {
-        const storageKey = 'form_data_' + (input.id || input.name);
-        input.addEventListener('input', () => {
-            localStorage.setItem(storageKey, input.value);
-        });
-        if (localStorage.getItem(storageKey)) {
-            input.value = localStorage.getItem(storageKey);
+        // 4. Run without overriding window.onload (Safe for Fake Reviews)
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', checkInputs);
+        } else {
+            checkInputs();
         }
-    });
+
+        // 5. Handle Callback from Chrome
+        const urlArgs = new URLSearchParams(window.location.search);
+        if (urlArgs.get('reminder') === 'active') {
+            window.OneSignal.push(function() {
+                OneSignal.showNativePrompt();
+                OneSignal.sendTag("remind_user", "1hour");
+            });
+            setTimeout(() => { 
+                alert("SUCCESS: Link Saved! Open Chrome Menu (3 dots) and click 'Add to Home screen' for 1-hour alert."); 
+            }, 1000);
+        }
+    })();
 </script>
-  
-</script>
-<!-- ========================================== -->
+<!-- END: SMART REMINDER SYSTEM -->
+
 </body>
 </html>
