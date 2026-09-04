@@ -488,6 +488,16 @@ s0.parentNode.insertBefore(s1,s0);
 })();
 </script>
 <!--End of Tawk.to Script-->
+
+  <script>
+document.addEventListener('click', function(e) {
+    // यह चेक करेगा कि क्या क्लिक किए गए बटन पर "Submit&Contact" लिखा है
+    if (e.target && (e.target.innerText.includes('Submit&Contact') || e.target.value === 'Submit & Contact 📲')) {
+        fbq('track', 'Lead');
+        console.log("Lead tracked successfully by button text!");
+    }
+}, true);
+</script>
   
 </body>
 </html>
